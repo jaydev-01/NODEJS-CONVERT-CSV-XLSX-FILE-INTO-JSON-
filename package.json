@@ -10,12 +10,12 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
+    "csvtojson": "^2.0.10",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "init-gitignore": "^1.0.2",
     "md5": "^2.3.0",
     "multer": "^1.4.5-lts.1",
-    "node-csv": "^0.1.2",
     "nodemon": "^2.0.20",
     "read-excel-file": "^5.5.3"
   }

@@ -1,8 +1,7 @@
 // imports
-const csv = require('node-csv');
+const csv = require('csvtojson');
 const xlsxFile = require('read-excel-file/node');
 const fs = require('fs');
-csvParser = csv.createParser();
 const { uploadCSVFile, uploadXLSXFile, delteFile } = require("../helpers/multer.config");
 
 
@@ -25,58 +24,11 @@ exports.ReadCsvFile = async (req, res) => {
                 data: null
             })
         } else {
-            /*
-            ----------------------------------------------------------------------------------------------
-             === mapFile of csvParser function will convert csv file into array of object ===
-             csvParser.mapFile(filePath, function (err, data) {
-                if (err) {
-                    console.log(err.message)
-                }
-                console.log(data);
-            });
-
-            data = [[1,2,3],[4,5,6]]
-            ----------------------------------------------------------------------------------------------
-            ----------------------------------------------------------------------------------------------
-            === where as parseFile of csvParser function will convert csv file into array of array ===
-             csvParser.parseFile(filePath, function (err, data) {
-                if (err) {
-                    console.log(err.message)
-                }
-                console.log(data);
-            });
-            data = [ [], [], []]
-            ----------------------------------------------------------------------------------------------
-            ----------------------------------------------------------------------------------------------
-            === and parse of csvParser function will conver csv string into array of array ===
-             csvParser.parse(csvString, function (err, data) {
-                if (err) {
-                    console.log(err.message)
-                }
-                console.log(data);
-            });
-            data = [{}.{},{}]
-            ---------------------------------------------------------------------------------------------
-            */
             let filePath = "./public/uploads/" + req.file.filename
-            csvParser.mapFile(filePath, function (err, data) {
-                if (err) {
-                    res.status(400).send({
-                        success: false,
-                        message: err.message || "Some Error occured!",
-                        data: null
-                    })
-                }
-                delteFile(filePath); //it will delete file from folder
-
-                fs.writeFile(`./public/uploads/${req.file.originalname.split('.')[0]}.json`, JSON.stringify(data), (err) => {
-                    if (err) {
-                        res.status(400).send({
-                            success: false,
-                            message: err.message || "Some Error occured!",
-                            data: null
-                        })
-                    }
+            csv()
+                .fromFile(filePath)
+                .then(async (data) => {
+                    delteFile(filePath); //it will delete file from folder
                     res.status(200).send({
                         success: true,
                         message: "CSV FILE CONVERTED TO JSON SUCCESSFULLY",
@@ -84,8 +36,13 @@ exports.ReadCsvFile = async (req, res) => {
                         data: data
                     })
                 })
-
-            });
+                .catch(err => {
+                    res.status(400).send({
+                        success: false,
+                        message: err.message || "Some Error occured!",
+                        data: null
+                    })
+                })
         }
     })
 }
